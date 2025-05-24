@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #category_chart {
+            min-height: 400px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Expense Tracker</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Monthly Summary</h5>
+                        <p>Total Expenses: ₹{{ "%.2f"|format(monthly_summary.total) }}</p>
+                        <p>Total Items: {{ monthly_summary.count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Category-wise Spending</h5>
+                        <div id="category_chart" style="min-height: 400px;">
+                            <script>
+                                // Data from Flask
+                                const chartData = {{ chart_data|tojson }};
+                                
+                                // Create chart data arrays
+                                const categories = chartData.map(item => item.category);
+                                const amounts = chartData.map(item => item.amount);
+                                
+                                // Create chart if we have data
+                                if (categories.length > 0) {
+                                    const trace = {
+                                        labels: categories,
+                                        values: amounts,
+                                        type: 'pie',
+                                        name: 'Category-wise Spending'
+                                    };
+                                    
+                                    const data = [trace];
+                                    const layout = {
+                                        title: 'Category-wise Spending',
+                                        height: 400
+                                    };
+                                    
+                                    Plotly.newPlot('category_chart', data, layout);
+                                } else {
+                                    document.getElementById('category_chart').innerHTML = '<p>No expenses to display</p>';
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <form action="{{ url_for('add_expense') }}" method="POST" class="mb-4">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Food">Food & Groceries</option>
+                            <option value="Transport">Transport & Fuel</option>
+                            <option value="Shopping">Shopping & Personal Care</option>
+                            <option value="Bills">Bills & Utilities</option>
+                            <option value="Entertainment">Entertainment & Leisure</option>
+                            <option value="Health">Health & Medical</option>
+                            <option value="Education">Education & Books</option>
+                            <option value="Household">Household Items</option>
+                            <option value="Clothing">Clothing & Accessories</option>
+                            <option value="Gifts">Gifts & Donations</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="description" name="description">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Recent Expenses</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ expense.category }}</td>
+                                    <td>₹{{ "%.2f"|format(expense.amount) }}</td>
+                                    <td>{{ expense.description }}</td>
+                                    <td>
+                                        <a href="{{ url_for('delete_expense', id=expense.id) }}" 
+                                           class="btn btn-danger btn-sm" 
+                                           onclick="return confirm('Are you sure you want to delete this expense?')">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
