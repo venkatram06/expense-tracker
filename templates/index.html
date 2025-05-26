@@ -1,0 +1,456 @@
+                                <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .category-selector {
+            margin-bottom: 1rem;
+        }
+
+        .quick-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .quick-categories button {
+            transition: all 0.3s ease;
+        }
+
+        .quick-categories button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .quick-categories button i {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+
+        .quick-categories button.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-color: white;
+        }
+
+        .category-selector select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .category-selector select option {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .category-selector select option:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .category-selector select option i {
+            margin-right: 0.5rem;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1d4ed8;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background-color: #f0f9ff;
+            --card-background: #ffffff;
+            --text-color: #1e40af;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            background-color: var(--card-background);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .summary-card {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            background: #f1f5f9;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-item i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .expense-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .expense-details {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .category {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .date {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff3f4b;
+        }
+
+        .add-expense-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .add-expense-card .card-header {
+            background: transparent;
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        .add-expense-card .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .add-expense-card .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .add-expense-card .btn-primary {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        .add-expense-card .btn-primary:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">Expense Tracker</h1>
+            <p class="lead">Track your expenses easily and efficiently</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card add-expense-card">
+                    <div class="card-header">
+                        <i class="fas fa-plus-circle"></i>
+                        <h5 class="mb-0">Add New Expense</h5>
+                    </div>
+                    <div class="card-body">
+                            <form id="expenseForm" method="POST">
+                                <div class="form-group">
+                                    <label for="amount">Amount</label>
+                                    <input type="number" class="form-control" id="amount" name="amount" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <div class="quick-categories">
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Groceries">
+                                            <i class="fas fa-shopping-cart"></i> Groceries
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Food">
+                                            <i class="fas fa-utensils"></i> Food
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Transport">
+                                            <i class="fas fa-bus"></i> Transport
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Health">
+                                            <i class="fas fa-heartbeat"></i> Health
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Shopping">
+                                            <i class="fas fa-shopping-bag"></i> Shopping
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Utilities">
+                                            <i class="fas fa-home"></i> Utilities
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm me-2 mb-2" data-category="Bills">
+                                            <i class="fas fa-file-invoice"></i> Bills
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Add New Expense</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="expenseForm">
+                            <input type="number" class="form-control" id="amount" name="amount" placeholder="Amount" required>
+                            <div class="quick-categories">
+                                <button type="button" class="btn btn-outline-primary" data-category="Groceries">
+                                    <i class="fas fa-shopping-cart"></i> Groceries
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Food">
+                                    <i class="fas fa-utensils"></i> Food
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Transport">
+                                    <i class="fas fa-bus"></i> Transport
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Health">
+                                    <i class="fas fa-heartbeat"></i> Health
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Shopping">
+                                    <i class="fas fa-shopping-bag"></i> Shopping
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Utilities">
+                                    <i class="fas fa-home"></i> Utilities
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Bills">
+                                    <i class="fas fa-file-invoice"></i> Bills
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Entertainment">
+                                    <i class="fas fa-film"></i> Entertainment
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Education">
+                                    <i class="fas fa-book"></i> Education
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-category="Other">
+                                    <i class="fas fa-ellipsis-h"></i> Other
+                                </button>
+                            </div>
+                            <input type="hidden" id="selectedCategory" name="category">
+                            <button type="submit" class="btn btn-primary">Add Expense</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recent Expenses</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                <tr>
+                                    <td>₹{{ "%.2f"|format(expense.amount) }}</td>
+                                    <td>{{ expense.category }}</td>
+                                    <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <button onclick="deleteExpense({{ expense.id }})" class="btn btn-danger delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Category button click handler
+        document.querySelectorAll('.quick-categories button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.quick-categories button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Update hidden input value
+                document.getElementById('selectedCategory').value = this.dataset.category;
+            });
+        });
+
+        // Form submission
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const amount = document.getElementById('amount').value;
+            const category = document.getElementById('selectedCategory').value;
+            
+            if (!amount || !category) {
+                alert('Please select both amount and category');
+                return;
+            }
+
+            fetch('/add', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    this.reset();
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding expense. Please try again.');
+            });
+        });
+
+        // Delete functionality
+        function deleteExpense(id) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                fetch(`/delete/${id}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting expense. Please try again.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
